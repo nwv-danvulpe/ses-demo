@@ -1,7 +1,5 @@
 package com.example.demo.rest;
 
-import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
-import com.amazonaws.services.simpleemail.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -9,6 +7,8 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import software.amazon.awssdk.services.ses.SesClient;
+import software.amazon.awssdk.services.ses.model.*;
 
 import javax.validation.Valid;
 import java.util.HashMap;
@@ -17,11 +17,11 @@ import java.util.Map;
 @RestController
 @Validated
 public class EmailController {
-    private final AmazonSimpleEmailService client;
+    private final SesClient client;
     private final String emailIdentityArn;
 
     @Autowired
-    public EmailController(AmazonSimpleEmailService client,
+    public EmailController(SesClient client,
                            @Value("${email.identity.arn}") String emailIdentityArn) {
         this.client = client;
         this.emailIdentityArn = emailIdentityArn;
@@ -29,16 +29,17 @@ public class EmailController {
 
     @PostMapping("/email")
     public void sendMessage(@Valid @RequestBody SendEmailRequestDto request) {
-        SendEmailRequest emailRequest = new SendEmailRequest()
-                .withDestination(new Destination().withToAddresses(request.getRecipient()))
-                .withMessage(new Message()
-                        .withSubject(new Content().withCharset("UTF-8").withData(request.getSubject()))
-                        .withBody(new Body()
-                                .withText(new Content()
-                                        .withCharset("UTF-8")
-                                        .withData(request.getMessage()))))
-                .withSource(request.getFrom())
-                .withSourceArn(emailIdentityArn);
+        SendEmailRequest emailRequest = SendEmailRequest.builder()
+                .destination(Destination.builder().toAddresses(request.getRecipient()).build())
+                .message(Message.builder()
+                        .subject(Content.builder().charset("UTF-8").data(request.getSubject()).build())
+                        .body(Body.builder()
+                                .text(Content.builder().charset("UTF-8").data(request.getMessage()).build())
+                                .build())
+                        .build())
+                .source(request.getFrom())
+                .sourceArn(emailIdentityArn)
+                .build();
         client.sendEmail(emailRequest);
     }
 

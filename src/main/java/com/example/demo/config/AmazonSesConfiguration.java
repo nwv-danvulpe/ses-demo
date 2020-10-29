@@ -1,18 +1,18 @@
 package com.example.demo.config;
 
-import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
-import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.ses.SesClient;
 
 @Configuration
 public class AmazonSesConfiguration {
 
     @Bean
-    public AmazonSimpleEmailService amazonSimpleEmailService(@Value("${aws.region}") String awsRegion) {
-        return AmazonSimpleEmailServiceClientBuilder.standard()
-                .withRegion(awsRegion)
+    public SesClient amazonSimpleEmailService(@Value("${aws.region}") String awsRegion) {
+        return SesClient.builder()
+                .region(Region.of(awsRegion))
                 .build();
     }
 }

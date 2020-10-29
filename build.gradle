@@ -18,7 +18,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-	implementation 'com.amazonaws:aws-java-sdk-ses:1.11.890'
+	implementation 'software.amazon.awssdk:ses:2.15.17'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
