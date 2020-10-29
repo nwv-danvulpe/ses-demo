@@ -38,7 +38,7 @@ public class EmailController {
                                 .build())
                         .build())
                 .source(request.getFrom())
-                .sourceArn(emailIdentityArn)
+//                .sourceArn(emailIdentityArn)
                 .build();
         client.sendEmail(emailRequest);
     }
