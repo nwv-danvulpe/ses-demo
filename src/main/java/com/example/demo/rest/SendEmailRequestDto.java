@@ -6,7 +6,6 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 public class SendEmailRequestDto {
-    @Email
     @NotBlank
     private final String from;
     @Email
